@@ -1,0 +1,245 @@
+<!Doctype="html5">
+<html>
+<head>
+    <title>socket index client </title>
+    <style>
+    *{padding: 5;margin:0;}  
+    body{
+        margin: 50px;
+    }      
+    #msgwrap{
+        float: left;
+        border: 1px solid;
+        box-shadow: 5px 15px 15px 5px silver;
+    }
+    #content{display: none;}
+    #nickwrap{float: right;border:1px groove ;border-radius: 5px;box-shadow: 5px 10px 18px 1px grey;}
+    #chatwrap{
+        text-align: center;
+    }
+    #onlineusers{position: fixed;box-shadow: 30px 30px 30px 30px  grey;bottom: 0;max-height: 100px;
+        scroll-behavior: auto;}
+    #display p{font-style: italic;color: blue;}
+    </style>
+</head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<body>
+
+
+    <div id="test">Chat App     
+     </div>
+
+    <div id="nickwrap">
+        <ul id="nickerr" style="color:red;font-size:26px"></ul>
+    <p> Enter A Username </p>
+
+    <form id="userform" action="">
+        <input id="nickname" autocomplete="off" required="required">
+        <input type="submit" ></input>
+    </form>
+
+    </div>
+<div id="content">
+
+<div><b><ul id="user" style="list-style-type:none;text-transform:capitalize;"></ul></b>
+<div id="msgwrap">
+<form action="" id="msgfrm"><legend>Message</legend>
+
+    <input type="text" id="message" required="required" autocomplete="off"  />
+
+    <input type="submit"  >
+
+
+</form>
+
+<div id="onlineusers"><b>Online Users : </b>
+<ul id="users" style="list-style-type:none;text-transform:capitalize;" ></ul>
+</div>
+
+</div>
+</div>
+<div id="chatwrap">
+
+<ul id="displaymsg" style="list-style-type:none;"></ul>
+<div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="/socket.io/socket.io.js">
+</script>
+<script>
+//start  call itself function
+    (function () {
+
+        
+  
+                //elements handler
+            var  element = function(id){
+              return document.getElementById(id);
+            }
+            //just for test
+            var test = element('test');
+        console.log(test.innerHTML);
+
+        //thats ok
+
+
+                //get the elemnents with element function & store it in a variable;
+                var message = element('message');
+                var msgfrm = element('msgfrm');
+                var btn = element('submit');
+                var display = element('displaymsg');
+                var userform = element('userform');
+                var nicname = element('nickname');
+                var nickerr = element('nickerr');
+                var user = element('user');
+                var users = element('users');
+
+            //connect socket
+            var socket = io.connect();
+            socket.on('connection',function(data){
+                console.log('connected');
+            });
+            socket.on('disconnect',function(){
+                console.log('a user is disconnected');
+                
+            });
+                // message form submission
+        msgfrm.addEventListener('submit',function(e) {
+            e.preventDefault();
+
+            socket.emit('chat',message.value,function (data) {
+                // body...add stuff later
+            });
+            console.log(message.value);
+            
+
+            message.value = '';
+
+          
+            console.log("Submited");
+            return false;
+        });
+
+        //username form submission & handler;
+
+        userform.addEventListener('submit',function (e) {
+            e.preventDefault();
+            socket.emit('new user',nickname.value) ;
+            nickname.value = '';
+           
+            console.log("userform submitted");
+            return false;
+       
+    });
+
+       
+                // catch the 'chat' event 
+            socket.on('chat',function (message) {
+                var su = message.user;
+                var msg = message.msg
+                var m = document.createTextNode(su + ':' + msg);
+                var line = document.createElement('LI');
+                line.appendChild(m);
+                display.appendChild(line);
+
+
+            });
+
+            // catch the secret message event;
+          socket.on('secret',function (data) {
+              console.log('secret msg : ', data);
+              var su = data.user;
+              var m = data.msg;
+              var msg = document.createTextNode(su+':'+m);
+              var line = document.createElement('P');
+              line.appendChild(msg);
+              display.appendChild(line);
+
+
+          })
+
+            // on a new user entred
+            socket.on('new user',function (data,callback) {
+                if(data){
+
+                     content.style.display = "block";
+                    nickwrap.style.display = "none";
+                var u = document.createTextNode(' welcome: '+data);
+                var line1 = document.createElement('LI');
+                line1.appendChild(u);
+                user.appendChild(line1);
+           } });
+
+                // showing online users list
+            socket.on('show users',function (data) {
+                var htm = '';
+                for (i=0;i<data.length;i++){
+                    htm += data[i] + ',\n';    
+                }
+
+                var us = document.createTextNode(htm);
+                 var line2 = document.createElement('LI');
+                 //var br = document.createElement('BR');
+                line2.appendChild(us);
+                users.appendChild(line2);
+                users.appendChild(line2)
+                users.replaceChild(line2,line2)
+            });
+
+            //show the err regarding username existance;
+            socket.on('feedback',function (msg) {
+                var f = document.createTextNode(msg);
+                var line = document.createElement('P');
+                line.appendChild(f);
+                nickerr.appendChild(line);
+                setInterval(4000);
+
+            })
+
+              })();//run function
+</script>
+</body>
+
+</html>
