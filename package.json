@@ -8,12 +8,12 @@
     "start": "nodemon server.js"
   },
   "dependencies": {
-    "express": "*",
-    "socket.io": "*",
-    "mongodb": "*",
-    "mongoose": "*",
     "body-parser": "*",
-    "fs": "*"
+    "express": "*",
+    "fs": "*",
+    "mongodb": "*",
+    "mongoose": "^5.5.11",
+    "socket.io": "*"
   },
   "author": "desraj",
   "license": "ISC"
