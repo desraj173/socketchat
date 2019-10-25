@@ -12,7 +12,7 @@
     "express": "*",
     "fs": "*",
     "mongodb": "*",
-    "mongoose": "^5.5.11",
+    "mongoose": "^5.7.5",
     "socket.io": "*"
   },
   "author": "desraj",
